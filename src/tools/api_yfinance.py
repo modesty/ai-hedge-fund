@@ -26,6 +26,16 @@ def get_prices(ticker: str, start_date: str, end_date: str) -> list[Price]:
     Ensures compatibility with Financial Datasets API format:
     1. Uses the same Price model
     2. Returns results in the same format
+    3. Handles errors gracefully, returning an empty list instead of raising exceptions
+
+    Args:
+        ticker: The stock ticker symbol
+        start_date: Start date in YYYY-MM-DD format
+        end_date: End date in YYYY-MM-DD format
+
+    Returns:
+        List of Price objects with standardized fields matching Financial Datasets API,
+        or empty list if data is unavailable or an error occurred
     """
     try:
         # Convert dates to datetime objects for yfinance
@@ -61,7 +71,9 @@ def get_prices(ticker: str, start_date: str, end_date: str) -> list[Price]:
         # Return the prices directly, matching the return type of Financial Datasets API function
         return prices
     except Exception as e:
-        raise Exception(f"Error fetching data from Yahoo Finance for {ticker}: {str(e)}")
+        print(f"Warning: Error fetching price data from Yahoo Finance for {ticker}: {str(e)}")
+        # Return empty list on error to avoid breaking the API
+        return []
 
 
 def get_financial_metrics(
@@ -77,6 +89,17 @@ def get_financial_metrics(
     2. Returns results in the same format
     3. Provides the same fields like market_cap, price_to_earnings_ratio, etc.
     4. Uses proper date formatting (YYYY-MM-DD) for report_period
+    5. Handles errors gracefully, returning an empty list instead of raising exceptions
+
+    Args:
+        ticker: The stock ticker symbol
+        end_date: End date in YYYY-MM-DD format
+        period: Financial reporting period, one of "ttm", "annual", "quarterly"
+        limit: Maximum number of metrics to return
+
+    Returns:
+        List of FinancialMetrics objects with standardized fields matching Financial Datasets API,
+        or empty list if data is unavailable or an error occurred
     """
     try:
         # Get ticker info
@@ -154,7 +177,9 @@ def get_financial_metrics(
         # The Financial Datasets API returns a list of FinancialMetrics objects
         return metrics[:limit]
     except Exception as e:
-        raise Exception(f"Error fetching financial metrics from Yahoo Finance for {ticker}: {str(e)}")
+        print(f"Warning: Error fetching financial metrics from Yahoo Finance for {ticker}: {str(e)}")
+        # Return empty list on error to avoid breaking the API
+        return []
 
 
 def get_company_news(
