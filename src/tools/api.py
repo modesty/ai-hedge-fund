@@ -2,6 +2,7 @@ import datetime
 import os
 import pandas as pd
 import requests
+from dotenv import load_dotenv
 
 from src.data.cache import get_cache
 from src.data.models import (
@@ -18,12 +19,26 @@ from src.data.models import (
     CompanyFactsResponse,
 )
 
+# For Yahoo Finance implementation
+from . import api_yfinance
+
+# Load environment variables
+load_dotenv()
+
 # Global cache instance
 _cache = get_cache()
+
+def _using_yahoo_finance() -> bool:
+    """Check if we're using Yahoo Finance API instead of Financial Datasets API."""
+    api_key = os.environ.get("FINANCIAL_DATASETS_API_KEY")
+    return api_key == "yahoo-finance-api"
 
 
 def get_prices(ticker: str, start_date: str, end_date: str) -> list[Price]:
     """Fetch price data from cache or API."""
+    if _using_yahoo_finance():
+        return api_yfinance.get_prices(ticker, start_date, end_date)
+
     # Check cache first
     if cached_data := _cache.get_prices(ticker):
         # Filter cached data by date range and convert to Price objects
@@ -60,6 +75,9 @@ def get_financial_metrics(
     limit: int = 10,
 ) -> list[FinancialMetrics]:
     """Fetch financial metrics from cache or API."""
+    if _using_yahoo_finance():
+        return api_yfinance.get_financial_metrics(ticker, end_date, period, limit)
+
     # Check cache first
     if cached_data := _cache.get_financial_metrics(ticker):
         # Filter cached data by date and limit
@@ -99,6 +117,9 @@ def search_line_items(
     limit: int = 10,
 ) -> list[LineItem]:
     """Fetch line items from API."""
+    if _using_yahoo_finance():
+        return api_yfinance.search_line_items(ticker, line_items, end_date, period, limit)
+
     # If not in cache or insufficient data, fetch from API
     headers = {}
     if api_key := os.environ.get("FINANCIAL_DATASETS_API_KEY"):
@@ -133,6 +154,9 @@ def get_insider_trades(
     limit: int = 1000,
 ) -> list[InsiderTrade]:
     """Fetch insider trades from cache or API."""
+    if _using_yahoo_finance():
+        return api_yfinance.get_insider_trades(ticker, end_date, start_date, limit)
+
     # Check cache first
     if cached_data := _cache.get_insider_trades(ticker):
         # Filter cached data by date range
@@ -194,6 +218,8 @@ def get_company_news(
     limit: int = 1000,
 ) -> list[CompanyNews]:
     """Fetch company news from cache or API."""
+    if _using_yahoo_finance():
+        return api_yfinance.get_company_news(ticker, end_date, start_date, limit)
     # Check cache first
     if cached_data := _cache.get_company_news(ticker):
         # Filter cached data by date range
@@ -253,6 +279,8 @@ def get_market_cap(
     end_date: str,
 ) -> float | None:
     """Fetch market cap from the API."""
+    if _using_yahoo_finance():
+        return api_yfinance.get_market_cap(ticker, end_date)
     # Check if end_date is today
     if end_date == datetime.datetime.now().strftime("%Y-%m-%d"):
         # Get the market cap from company facts API

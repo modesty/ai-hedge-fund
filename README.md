@@ -90,6 +90,7 @@ GROQ_API_KEY=your-groq-api-key
 
 # For getting financial data to power the hedge fund
 # Get your Financial Datasets API key from https://financialdatasets.ai/
+# Or use 'yahoo-finance-api' to use Yahoo Finance as the data source
 FINANCIAL_DATASETS_API_KEY=your-financial-datasets-api-key
 ```
 
@@ -124,7 +125,44 @@ run.bat build
 
 Financial data for AAPL, GOOGL, MSFT, NVDA, and TSLA is free and does not require an API key.
 
-For any other ticker, you will need to set the `FINANCIAL_DATASETS_API_KEY` in the .env file.
+### Using Yahoo Finance API
+
+You can use Yahoo Finance API as an alternative data source by setting:
+```bash
+FINANCIAL_DATASETS_API_KEY=yahoo-finance-api
+```
+
+This option allows you to retrieve financial data through Yahoo Finance's public API without requiring paid API keys. Yahoo Finance provides access to:
+
+- Price data (OHLCV)
+- Financial metrics (P/E ratio, market cap, etc.)
+- Company news
+- Financial statement line items (revenue, net income, etc.)
+- And more
+
+#### Testing Yahoo Finance Integration
+
+To verify the Yahoo Finance integration is working correctly, use the comprehensive test script:
+
+```bash
+# Run all Yahoo Finance tests
+poetry run python test_yahoo.py
+
+# Test specific data types
+poetry run python test_yahoo.py --test prices
+poetry run python test_yahoo.py --test metrics
+poetry run python test_yahoo.py --test news
+poetry run python test_yahoo.py --test direct_news
+poetry run python test_yahoo.py --test line_items
+poetry run python test_yahoo.py --test insider
+
+# Test with specific ticker
+poetry run python test_yahoo.py --ticker MSFT
+```
+
+The test script validates that all required data can be retrieved correctly from Yahoo Finance for use in the AI Hedge Fund application.
+
+For any other ticker with Financial Datasets API, you will need to set your actual API key in the .env file.
 
 ## Usage
 
