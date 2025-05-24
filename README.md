@@ -41,16 +41,25 @@ This project is for **educational and research purposes only**.
 By using this software, you agree to use it solely for learning purposes.
 
 ## Table of Contents
-- [Setup](#setup)
-  - [Using Poetry](#using-poetry)
-  - [Using Docker](#using-docker)
-- [Usage](#usage)
-  - [Running the Hedge Fund](#running-the-hedge-fund)
-  - [Running the Backtester](#running-the-backtester)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [Feature Requests](#feature-requests)
-- [License](#license)
+- [AI Hedge Fund](#ai-hedge-fund)
+	- [Disclaimer](#disclaimer)
+	- [Table of Contents](#table-of-contents)
+	- [Setup](#setup)
+		- [Using Poetry](#using-poetry)
+		- [Using Docker](#using-docker)
+		- [Using Yahoo Finance API](#using-yahoo-finance-api)
+			- [Testing Yahoo Finance Integration](#testing-yahoo-finance-integration)
+	- [Usage](#usage)
+		- [Running the Hedge Fund](#running-the-hedge-fund)
+			- [With Poetry](#with-poetry)
+			- [With Docker](#with-docker)
+		- [Running the Backtester](#running-the-backtester)
+			- [With Poetry](#with-poetry-1)
+			- [With Docker](#with-docker-1)
+	- [Project Structure](#project-structure)
+	- [Contributing](#contributing)
+	- [Feature Requests](#feature-requests)
+	- [License](#license)
 
 ## Setup
 
@@ -155,12 +164,13 @@ poetry run python test_yahoo.py --test news
 poetry run python test_yahoo.py --test direct_news
 poetry run python test_yahoo.py --test line_items
 poetry run python test_yahoo.py --test insider
+poetry run python test_yahoo.py --test compatibility  # Test API compatibility with Financial Datasets API format
 
 # Test with specific ticker
 poetry run python test_yahoo.py --ticker MSFT
 ```
 
-The test script validates that all required data can be retrieved correctly from Yahoo Finance for use in the AI Hedge Fund application.
+The test script validates that all required data can be retrieved correctly from Yahoo Finance for use in the AI Hedge Fund application. The compatibility test specifically ensures that the Yahoo Finance implementation returns data in the same format as the Financial Datasets API, allowing seamless switching between data sources.
 
 For any other ticker with Financial Datasets API, you will need to set your actual API key in the .env file.
 
